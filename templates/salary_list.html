@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Salary Sheets</h2>
+  <a class="btn btn-primary mb-3" href="{{ url_for('salary_new') }}">New Salary Sheet</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Employee</th>
+        <th>Shop</th>
+        <th>Week</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for s in sheets %}
+      <tr>
+        <td>{{ s.id }}</td>
+        <td>{{ s.employee }}</td>
+        <td>{{ s.shop }}</td>
+        <td>{{ s.week_from }} - {{ s.week_to }}</td>
+        <td>
+          <a class="btn btn-sm btn-primary" href="{{ url_for('salary_view', id=s.id) }}">View</a>
+           <a class="btn btn-sm btn-warning" href="{{ url_for('salary_edit', id=s.id) }}" >Edit</a>
+          <form method="POST" action="{{ url_for('salary_delete', id=s.id) }}" 
+          style="display:inline;" 
+          onsubmit="return confirm('Are you sure you want to delete this salary sheet?');">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('salary_export_pdf', id=s.id) }}">PDF</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('salary_export_excel', id=s.id) }}">Excel</a>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">No sheets yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

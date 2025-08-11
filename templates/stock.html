@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Stock Order</h2>
+
+  <div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <input type="text" id="type_search" class="form-control" placeholder="Search by Type">
+  </div>
+  <div class="col-md-3">
+    <input type="text" id="product_search" class="form-control" placeholder="Search by Product">
+  </div>
+</div>
+
+
+  <!-- <form method="GET" action="{{ url_for('stock') }}" class="row g-3 mb-4">
+    <div class="col-md-4">
+      <input type="text" name="search" value="{{ request.args.get('search','') }}" class="form-control" placeholder="Search Type or Product">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary">Search</button>
+      <a href="{{ url_for('stock') }}" class="btn btn-secondary">Clear</a>
+    </div>
+  </form> -->
+
+  <form method="POST" action="{{ url_for('add_item') }}" class="row g-3 mb-4">
+   <div class="col-md-1">
+  <label class="form-label">Sr</label>
+  <input type="number" name="sr" class="form-control" id="sr" value="{{ next_sr }}" readonly>
+</div>
+    <div class="col-md-3">
+      <label class="form-label">Type</label>
+
+      <input list="types_list" id="type" name="type" class="form-control" placeholder="Search or select type" required>
+      <datalist id="types_list">
+  {% for t in types %}
+    <option value="{{ t }}">
+  {% endfor %}
+      </datalist>
+
+      <!-- <select id="type" name="type" class="form-select" required>
+        <option value="">-- Select Type --</option>
+        {% for t in types %}
+          <option value="{{ t }}">{{ t }}</option>
+        {% endfor %}
+      </select> -->
+      <input id="type_text" class="form-control mt-1" placeholder="Or type new type and press Add">
+      <button id="add_type" type="button" class="btn btn-sm btn-outline-secondary mt-1">Add Type</button>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Product</label>
+
+      <input list="products_list" id="product" name="product" class="form-control" placeholder="Search or select product" required>
+      <datalist id="products_list">
+  {% for s in products %}
+    <option value="{{ s }}">
+  {% endfor %}
+      </datalist>
+
+
+      <!-- <select id="product" name="product" class="form-select" required>
+        <option value="">-- Select Product --</option>
+        {% for s in products %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select> -->
+      <input id="product_text" class="form-control mt-1" placeholder="Or type new product and press Add">
+      <button id="add_product" type="button" class="btn btn-sm btn-outline-secondary mt-1">Add Product</button>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Description</label>
+      <input type="text" name="description" class="form-control">
+    </div>
+    <div class="col-md-1">
+      <label class="form-label">Quantity</label>
+      <input type="number" name="quantity" class="form-control" required>
+    </div>
+    <div class="col-md-1 align-self-end">
+      <button type="submit" class="btn btn-success">Add</button>
+    </div>
+  </form>
+
+  <div class="mb-3">
+    <a class="btn btn-outline-primary" href="{{ url_for('export_excel') }}">Export to Excel</a>
+    <a class="btn btn-outline-danger" href="{{ url_for('export_pdf') }}">Export to PDF</a>
+    <a class="btn btn-secondary" href="{{ url_for('clear_all') }}">Clear All</a>
+  </div>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Sr</th>
+        <th>Type</th>
+        <th>Product</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.sr }}</td>
+        <td>{{ item.type }}</td>
+        <td>{{ item.product }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>
+          <a href="{{ url_for('edit_item', item_id=item.id) }}" class="btn btn-sm btn-primary">Edit</a>
+          <form method="POST" action="{{ url_for('delete_item', item_id=item.id) }}" style="display:inline" onsubmit="return confirm('Delete this item?');">
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center">No items yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function(){
+  $('#add_type').on('click', function(){
+    const v = $('#type_text').val().trim();
+    if(!v) return alert('Enter type');
+    // add option to select and select it
+    if($("#type option[value='"+v+"']").length==0){
+      $('#type').append(new Option(v,v,true,true));
+    } else {
+      $('#type').val(v);
+    }
+    $('#type_text').val('');
+  });
+  $('#add_product').on('click', function(){
+    const v = $('#product_text').val().trim();
+    if(!v) return alert('Enter product');
+    if($("#product option[value='"+v+"']").length==0){
+      $('#product').append(new Option(v,v,true,true));
+    } else {
+      $('#product').val(v);
+    }
+    $('#product_text').val('');
+  });
+});
+</script> -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function(){
+  // Add new type to datalist
+  $('#add_type').on('click', function(){
+    const v = $('#type_text').val().trim();
+    if(!v) return alert('Enter type');
+    if($("#types_list option[value='"+v+"']").length == 0){
+      $('#types_list').append(new Option(v, v));
+    }
+    $('#type').val(v);
+    $('#type_text').val('');
+  });
+
+  // Add new product to datalist
+  $('#add_product').on('click', function(){
+    const v = $('#product_text').val().trim();
+    if(!v) return alert('Enter product');
+    if($("#products_list option[value='"+v+"']").length == 0){
+      $('#products_list').append(new Option(v, v));
+    }
+    $('#product').val(v);
+    $('#product_text').val('');
+  });
+
+  // Optional: AJAX search for table filtering
+  function fetchStock(){
+    let typeSearch = $('#type_search').val();
+    let productSearch = $('#product_search').val();
+    $.get('{{ url_for("stock_data") }}', {
+      type_search: typeSearch,
+      product_search: productSearch
+    }, function(data){
+      $('#stock_table').html(data);
+    });
+  }
+
+  $('#type_search, #product_search').on('input', function(){
+    fetchStock();
+  });
+});
+</script>
+
+
+{% endblock %}

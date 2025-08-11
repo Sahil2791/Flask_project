@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📊 Welcome to My Phone Bishop #351</h1>
+    <p class="text-center text-muted mb-5">Select a section below to get started</p>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <a href="{{ url_for('stock') }}" class="text-decoration-none">
+                <div class="card shadow-sm text-center p-4 h-100">
+                    <h4>📦 Stock Orders</h4>
+                    <p class="text-muted">View, add, edit and export stock inventory.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('salary_list') }}" class="text-decoration-none">
+                <div class="card shadow-sm text-center p-4 h-100">
+                    <h4>💰 Salary Sheets</h4>
+                    <p class="text-muted">Manage and export salary sheets for employees.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('cex_price_page') }}" class="text-decoration-none">
+                <div class="card shadow-sm text-center p-4 h-100">
+                    <h4>🔍 Price Checker</h4>
+                    <p class="text-muted">Search for product prices instantly.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

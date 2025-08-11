@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Salary Sheet</h2>
+
+<div style="margin-bottom: 15px;">
+    <a href="{{ url_for('salary_export_pdf', id=s.id) }}" class="btn btn-primary">Download PDF</a>
+    <form method="POST" action="{{ url_for('salary_delete', id=s.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this salary sheet?');">
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>
+
+<p><strong>Employee:</strong> {{ s.employee }} &nbsp;&nbsp;&nbsp;
+<strong>Shop:</strong> {{ s.shop }}</p>
+<p><strong>Week From:</strong> {{ s.week_from }} &nbsp;&nbsp;&nbsp;
+<strong>Week To:</strong> {{ s.week_to }}</p>
+<p><strong>Previous Balance:</strong> {{ "%.2f"|format(s.prev_balance or 0) }}</p>
+
+<table class="table table-bordered" style="width:auto; min-width:700px; margin-top:15px;">
+    <thead class="table-light">
+        <tr>
+            <th>Date</th>
+            <th>Day</th>
+            <th>Shop Name</th>
+            <th>Wages</th>
+            <th>Travel</th>
+            <th>Bonus</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+        <tr>
+            <td>{{ row.date }}</td>
+            <td>{{ row.day_name }}</td>
+            <td>{{ row.shop }}</td>
+            <td style="text-align:right;">{{ "%.2f"|format(row.wages) }}</td>
+            <td style="text-align:right;">{{ "%.2f"|format(row.travel) }}</td>
+            <td style="text-align:right;">{{ "%.2f"|format(row.bonus) }}</td>
+        </tr>
+    {% endfor %}
+    <tr class="table-light">
+        <td></td>
+        <td><strong>Total</strong></td>
+        <td></td>
+        <td style="text-align:right;"><strong>{{ "%.2f"|format(total_wages) }}</strong></td>
+        <td style="text-align:right;"><strong>{{ "%.2f"|format(total_travel) }}</strong></td>
+        <td style="text-align:right;"><strong>{{ "%.2f"|format(total_bonus) }}</strong></td>
+    </tr>
+</tbody>
+<br>
+</table>
+
+<div style="margin-top:15px;">
+    <p><strong>Cash Collection From Sales:</strong> {{ "%.2f"|format(s.cash_collection or 0) }}</p>
+    <p><strong>Other Cash Collection:</strong> {{ "%.2f"|format(s.other_collection or 0) }}</p>
+    <p><strong>Bank Transfer:</strong> {{ "%.2f"|format(s.bank_transfer or 0) }}</p>
+    <p><strong>Other:</strong> {{ "%.2f"|format(s.other or 0) }}</p>
+    <p><strong>Total Balance Now:</strong> {{ "%.2f"|format(total_balance_now) }}</p>
+</div>
+{% endblock %}

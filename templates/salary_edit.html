@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Salary Sheet</h2>
+
+<form method="POST">
+    <!-- Employee Info -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label>Employee Name</label>
+            <input type="text" name="employee" class="form-control" value="{{ s.employee }}">
+        </div>
+        <div class="col-md-4">
+            <label>Shop</label>
+            <input type="text" name="shop" class="form-control" value="{{ s.shop }}">
+        </div>
+        <div class="col-md-2">
+            <label>Week From</label>
+            <input type="date" name="week_from" class="form-control" value="{{ s.week_from }}">
+        </div>
+        <div class="col-md-2">
+            <label>Week To</label>
+            <input type="date" name="week_to" class="form-control" value="{{ s.week_to }}">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Previous Balance</label>
+        <input type="number" step="0.01" name="prev_balance" class="form-control" value="{{ s.prev_balance }}">
+    </div>
+
+    <!-- Daily Entries Table -->
+    <table class="table table-bordered table-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Shop Name</th>
+                <th>Wages</th>
+                <th>Travel</th>
+                <th>Bonus</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>
+                    <input type="date" name="date_{{ loop.index0 }}" class="form-control" value="{{ row.date }}">
+                </td>
+                <td>
+                    <input type="text" name="day_{{ loop.index0 }}" class="form-control" value="{{ row.day_name }}" readonly>
+                </td>
+                <td>
+                    <input type="text" name="shop_{{ loop.index0 }}" class="form-control" value="{{ row.shop }}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="wages_{{ loop.index0 }}" class="form-control" value="{{ row.wages }}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="travel_{{ loop.index0 }}" class="form-control" value="{{ row.travel }}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="bonus_{{ loop.index0 }}" class="form-control" value="{{ row.bonus }}">
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Summary Section -->
+    <div class="row">
+        <div class="col-md-4">
+            <label>Cash Collection From Sales</label>
+            <input type="number" step="0.01" name="cash_collection" class="form-control" value="{{ s.cash_collection }}">
+        </div>
+        <div class="col-md-4">
+            <label>Other Cash Collection</label>
+            <input type="number" step="0.01" name="other_collection" class="form-control" value="{{ s.other_collection }}">
+        </div>
+        <div class="col-md-4">
+            <label>Bank Transfer</label>
+            <input type="number" step="0.01" name="bank_transfer" class="form-control" value="{{ s.bank_transfer }}">
+        </div>
+        <div class="col-md-4 mt-3">
+            <label>Other</label>
+            <input type="number" step="0.01" name="other" class="form-control" value="{{ s.other }}">
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="{{ url_for('salary_view', id=s.id) }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

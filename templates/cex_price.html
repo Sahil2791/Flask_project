@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>CEX Price Checker</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6 position-relative">
+        <div class="input-group">
+            <input type="text" id="product_name" class="form-control" placeholder="Enter product name">
+            <button id="lookup_btn" class="btn btn-primary">Lookup</button>
+        </div>
+        <div id="suggestions" class="list-group position-absolute w-100" style="z-index: 1000; display:none;"></div>
+    </div>
+</div>
+
+<div id="result" class="alert alert-info" style="display:none;"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function(){
+    let timer = null;
+
+    // Suggestions as you type
+    $('#product_name').on('input', function(){
+        clearTimeout(timer);
+        let query = $(this).val().trim();
+        if(!query){
+            $('#suggestions').hide().empty();
+            $('#result').hide().text('');
+            return;
+        }
+        timer = setTimeout(function(){
+            $.get('{{ url_for("cex_suggestions") }}', { query: query }, function(data){
+                if(data.suggestions && data.suggestions.length > 0){
+                    $('#suggestions').empty().show();
+                    data.suggestions.forEach(item => {
+                        $('#suggestions').append('<a href="#" class="list-group-item list-group-item-action suggestion-item">' + item + '</a>');
+                    });
+                } else {
+                    $('#suggestions').hide().empty();
+                }
+            });
+        }, 300);
+    });
+
+    // Clicking a suggestion fills input
+    $(document).on('click', '.suggestion-item', function(e){
+        e.preventDefault();
+        let selected = $(this).text();
+        $('#product_name').val(selected);
+        $('#suggestions').hide().empty();
+    });
+
+    // Lookup button click
+    $('#lookup_btn').on('click', function(){
+        let product = $('#product_name').val().trim();
+        if(!product){
+            $('#result').text('Please enter a product name').show();
+            return;
+        }
+        $.get('{{ url_for("cex_fetch_price") }}', { product: product }, function(data){
+            if(data.price){
+                $('#result').text('CEX Price: £' + data.price).show();
+            } else {
+                $('#result').text('Price not found').show();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
