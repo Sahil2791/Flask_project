@@ -9,6 +9,19 @@ from reportlab.lib.styles import getSampleStyleSheet
 import os
 # import requests
 
+import os
+
+# Old line (SQLite)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stock.db'
+
+# New line (Postgres from Render)
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///stock.db')
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+
+
 
 
 app = Flask(__name__)
