@@ -10,16 +10,23 @@ import os
 # import requests
 
 import os
+# Database Configuration
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+app = Flask(__name__)
 
-# Old line (SQLite)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stock.db'
+# PostgreSQL URL from Render
+DATABASE_URL = "postgresql://stock_db_agv0_user:Qslm3lWo31gs1NEAyCuh9kYsfBh1BAFK@dpg-d2ctp1idbo4c73c49jf0-a/stock_db_agv0"
 
-# New line (Postgres from Render)
-DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///stock.db')
-if DATABASE_URL.startswith('postgres://'):
-    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+# Render sometimes gives old-style 'postgres://' instead of 'postgresql://'
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.secret_key = "your-secret-key"
+
+db = SQLAlchemy(app)
 
 
 
