@@ -1,2 +1,2 @@
-# Flask_project
+# Stock-app
 Stock Order System
